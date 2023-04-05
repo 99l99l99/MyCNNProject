@@ -1,0 +1,95 @@
+data:
+    path: ['./data/new_uav_keypoints/intensity_600/','./data/new_uav_keypoints/intensity_200/','./data/new_uav_keypoints/intensity_400/','./data/new_uav_keypoints/intensity_800/','./data/new_uav_keypoints/intensity_1000/',
+            './data/new_uav_keypoints_no_leaf/intensity_600/','./data/new_uav_keypoints_no_leaf/intensity_200/','./data/new_uav_keypoints_no_leaf/intensity_400/','./data/new_uav_keypoints_no_leaf/intensity_800/','./data/new_uav_keypoints_no_leaf/intensity_1000/']
+    resize: [128, 128] #w, h
+    map_downsample: 4
+    normalization:
+        enable: true
+        mean: [82.19925896,76.40684557,98.99957798]
+        std: [26.53197243,27.97164752,32.39449888]
+    photometric:
+        enable: true
+        params:
+            brightness: 
+                max_abs_change: 25
+            contrast: 
+                strength_range: [0.8, 1.2]
+            hue_saturation:
+                hue_range: [-10, 10]
+                saturation_range: [0.8, 1.2]
+            gaussian_noise: 
+                stddev_range: [1, 5]
+            speckle_noise: 
+               intensity: 3
+            gaussian_blur: 
+                max_kernel_size: 2 # real_size = max_kernel_size * 2 + 1
+                max_sigma: 2
+            motion_blur:
+                max_kernel_size_x: 3 # real_size = max_kernel_size * 2 + 1
+                max_kernel_size_y: 3
+            mixup:
+                max_ratio: 0.2
+    homographic:
+        enable: true
+        params:
+            crop: 
+                mode: 'ratio' # pixel 指定像素 ratio指定比例
+                w_range: [-0.125, 0.05]
+                h_range: [-0.125, 0.05]
+            pad:
+                mode: 'ratio'
+                w_range: [-0.125, 0.05]
+                h_range: [-0.125, 0.05]
+            #flip: true
+            yolo:
+                scale: 0.95
+                jitter: 0.05
+    uav:
+        photometric:
+            enable: true
+            params:
+                brightness: 
+                    max_abs_change: 10
+                contrast: 
+                    strength_range: [0.9, 1.1]
+                hue_saturation:
+                    hue_range: [-5, 5]
+                    saturation_range: [0.9, 1.1]
+                gaussian_noise: 
+                    stddev_range: [1, 5]
+                gaussian_blur: 
+                    max_kernel_size: 1 # real_size = max_kernel_size * 2 + 1
+                    max_sigma: 1
+                motion_blur:
+                    max_kernel_size_x: 1 # real_size = max_kernel_size * 2 + 1
+                    max_kernel_size_y: 1
+train:
+    wandb: false
+    batch_size: 32
+    num_workers: 1
+    learning_rate: 0.001
+    weight_decay: 0.001
+    skip_scheduler_epoch: 30
+    cosine_annealing_T: 10
+    minimal_learning_rate: 0.0001
+    num_epochs: 200
+    save_pkg: 'HeatMap/test0'
+val:
+    label_paths: ["data/val/rectImages/images/val_label0.txt", "data/val/rectImages/images/val_label1.txt"]
+    image_pkgs: ["data/val/rectImages/images/0/", "data/val/rectImages/images/1/"]
+    resize: [128, 128] #w, h
+    batch_size: 1 #must be 1
+    map_downsample: 4
+    suppression_sigma: 1
+    prob_threshold: 0.5
+    max_num: 4
+    distance_threshold: 5
+model:
+    num_class: 2
+    out_shape: [32, 32]
+    device: 'cuda'
+    to_gray: true
+loss:
+    alpha: 2
+    beta: 4
+    lambda_offsets: 1
